@@ -1,11 +1,15 @@
 const express = require("express");
-const config = require('config');
 const morgan = require("morgan");
-const rutas = require("./routes/usuarios");
+
+const usuarios = require("./routes/usuarios");
+const cursos = require("./routes/cursos");
+const { dbConnection } = require("./database/config");
+const auth = require("./auth/auth");
+
+
 const app = express();
 
 // const logger= require('./middleware/logger');
-
 
 
 
@@ -17,11 +21,13 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
 
 // Middleware Rutas para el control y mantenimineto de la aplicación
-app.use('/api/usuarios',rutas);
+app.use('/api/usuarios',usuarios);
+app.use('/api/cursos',cursos);
+app.use('/api/auth',auth);
 
 // Configuracion de entonros
-console.log('Aplicacion: ' + config.get('nombre') );
-console.log('DB: ', config.get('configDB.host'));
+// console.log('Aplicacion: ' + config.get('nombre') );
+// console.log('DB: ', config.get('configDB.host'));
 
 
 // Uso de middleware de tercero
@@ -35,7 +41,7 @@ app.get('/', (req,res)=>{
     res.send('Hola mundo enviado desde Express');
 });
 
-
+dbConnection();
 
 const port= process.env.PORT || 3000;
 app.listen(port, () =>{

@@ -1,108 +1,62 @@
 const express = require("express");
 const Joi =require('@hapi/joi');
+const { crearUsuario, actualizarUsuario, eliminarUsuario, listarUsuarios } = require("../controllers/usuarioController");
+const verificarToken = require("../middleware/verificarToken");
 
 const rutas= express.Router();
 
 
-let users=[{id:1, name:'grover'}, {id:2, name:'felix'}, {id:3, name:'Cuevas'}];
+rutas.get('/', verificarToken,listarUsuarios);
+rutas.post('/', crearUsuario); 
+rutas.put('/:email', verificarToken, actualizarUsuario); 
+rutas.delete('/:email', verificarToken, eliminarUsuario); 
 
 
-rutas.get('/', (req, res)=>{
-    res.send(users);
-});
 
-rutas.get('/:id', (req, res)=>{
-    const {id}= req.params;
+// rutas.get('/:id', (req, res)=>{
+//     const {id}= req.params;
 
-    const user=existeUser(id);
-    if(!user){
-        res.status(404).send('Usuario no encontrado!');
-        return;
-    }
-    else
-        res.send(user);
-});
-
-rutas.post('/', (req,res)=>{
+//     const user=existeUser(id);
+//     if(!user){
+//         res.status(404).send('Usuario no encontrado!');
+//         return;
+//     }
+//     else
+//         res.send(user);
+// });
 
 
-    const {error, value}= validarUsuario( req.body.name );
-    // schema.validate({ name:req.body.name });
+// });
+// rutas.delete('/:id',(req,res)=>{
+//     const {id}= req.params;
+//     const user=existeUser(id);
+//     if(!user){
+//         res.status(404).send('Usuario no encontrado!');
+//         return;
+//     }
+//     else{
+//         users.splice(id-1,1);
+//         res.json({
+//             message:'Se borro con exito',
+//             data:user
+//         });
+//     }
+// });
 
 
-    if(!error){
 
-        const user={
-            id: users.length+1,
-            name: value.name
-        }
+// function existeUser(id){
+//     return users.find(user => user.id === parseInt(id) );
+// }
 
-        users.push(user);
+// function validarUsuario(name ){
 
-        res.status(201).json({
-            message:'Usuario agregado',
-            data:user
-        });
-    }
-    else{
-        const message= error.details[0].message;
-        res.status(400).send(message);
-        return;
-    }
-});
-
-rutas.put('/:id',(req,res)=>{
-    const {id}= req.params;
-
-    const user=existeUser(id);
-    if(!user){
-        res.status(404).send('Usuario no encontrado!');
-        return;
-    }
-
-    const {error, value}= validarUsuario( req.body.name );
-
-            if(error){
-                const message= error.details[0].message;
-                res.status(400).send(message);
-                return;
-            }
-
-            user.name= value.name;
-            res.send(user)
+//     const schema = Joi.object({
+//         name: Joi.string().alphanum().min(3).required()    
+//     })
     
-    
-});
-rutas.delete('/:id',(req,res)=>{
-    const {id}= req.params;
-    const user=existeUser(id);
-    if(!user){
-        res.status(404).send('Usuario no encontrado!');
-        return;
-    }
-    else{
-        users.splice(id-1,1);
-        res.json({
-            message:'Se borro con exito',
-            data:user
-        });
-    }
-});
-
-
-
-function existeUser(id){
-    return users.find(user => user.id === parseInt(id) );
-}
-
-function validarUsuario(name ){
-
-    const schema = Joi.object({
-        name: Joi.string().alphanum().min(3).required()    
-    })
-    
-    return schema.validate({ name });
-}
+//     return schema.validate({ name });
+// }
 
 
 module.exports=rutas;

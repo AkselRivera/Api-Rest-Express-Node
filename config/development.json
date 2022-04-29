@@ -2,5 +2,9 @@
     "nombre": "Api Rest Express - Desarrollo",
     "configDB": {
         "host": "prueba-db-server"
+    },
+    "configToken":{
+        "SEED": "palabraSecreta",
+        "expiracion":"1hr"
     }
 }
